@@ -18,6 +18,8 @@ jobs:
       uses: AnimMouse/setup-rclone@v1
     - name: Setup yt-dlp with ffmpeg
       uses: AnimMouse/setup-yt-dlp@v3
+    - name: Setup FFmpeg
+      uses: AnimMouse/setup-ffmpeg@v1
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
       with:
