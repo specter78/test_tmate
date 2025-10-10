@@ -34,8 +34,6 @@ jobs:
         rclone_config: ${{ secrets.RCLONE_CONFIG }}
     - name: Setup yt-dlp with ffmpeg
       uses: AnimMouse/setup-yt-dlp@v3
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
     - name: Script-1
       run: |
         curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
@@ -50,6 +48,9 @@ jobs:
         for f in *.mkv; do
           ffmpeg -threads 4 -i "$f" -threads 4 -map 0 -filter:v "crop=1440:1080:240:0" -c:a copy -c:s copy "tmp_$f" &&
           mv -f "tmp_$f" "$f"
+        done
+        for f in *.mkv; do
+          ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$f"
         done
     - name: Script-3
       run: rclone copy . remote:/ --include="*.mkv" -P --stats 1s -v --stats-one-line
