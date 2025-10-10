@@ -24,6 +24,8 @@ jobs:
         sudo apt install python3-pip
     - name: Setup rclone
       uses: AnimMouse/setup-rclone@v1
+      with:
+        rclone_config: ${{ secrets.RCLONE_CONFIG }}
     - name: Setup yt-dlp with ffmpeg
       uses: AnimMouse/setup-yt-dlp@v3
     - name: Setup tmate session
