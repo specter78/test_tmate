@@ -26,6 +26,10 @@ jobs:
       uses: AnimMouse/setup-rclone@v1
       with:
         rclone_config: ${{ secrets.RCLONE_CONFIG }}
+    - name: Setup deno
+      uses: denoland/setup-deno@v2
+      with:
+        deno-version: vx.x.x
     - name: Setup yt-dlp with ffmpeg
       uses: AnimMouse/setup-yt-dlp@v3
     - name: Setup tmate session
