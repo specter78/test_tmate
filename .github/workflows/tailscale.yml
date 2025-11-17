@@ -38,3 +38,5 @@ jobs:
         oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
         oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
         tags: tag:ci
+    - name: Keep CI alive
+      run: tmux new -d -s idle -c /tmp tail -f /dev/null
