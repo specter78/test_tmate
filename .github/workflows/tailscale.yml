@@ -1,0 +1,40 @@
+name: tailscale
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v5
+    - name: Delete workflow runs
+      uses: Mattraks/delete-workflow-runs@main
+      with:
+        retain_days: 0
+        keep_minimum_runs: 0
+    - uses: ruby/setup-ruby@v1
+      with:
+          ruby-version: ruby
+    - uses: actions/setup-python@v6
+      with:
+          python-version: '3.x'
+    - name: Setup Environment
+      run: |
+        sudo apt install python3-pip
+    - name: Setup rclone
+      uses: AnimMouse/setup-rclone@v1
+      with:
+        rclone_config: ${{ secrets.RCLONE_CONFIG }}
+    - name: Setup deno
+      uses: denoland/setup-deno@v2
+      with:
+        deno-version: vx.x.x
+    - name: Setup yt-dlp with ffmpeg
+      uses: AnimMouse/setup-yt-dlp@v3
+    - name: Setup tailscale
+      uses: tailscale/github-action@v4
+      with:
+        oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+        oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+        tags: tag:ci
