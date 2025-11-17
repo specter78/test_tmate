@@ -22,6 +22,7 @@ jobs:
     - name: Setup Environment
       run: |
         sudo apt install python3-pip
+        curl https://getcroc.schollz.com | bash
     - name: Setup rclone
       uses: AnimMouse/setup-rclone@v1
       with:
