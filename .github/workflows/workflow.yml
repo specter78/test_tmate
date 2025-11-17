@@ -45,6 +45,7 @@ jobs:
       uses: mxschmitt/action-tmate@v3
       with:
         detached: true
+        limit-access-to-actor: true
     - name: Send SSH to telegram
       run: |
         BOT="${{ secrets.TG_BOT }}"
