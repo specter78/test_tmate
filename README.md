@@ -1,4 +1,4 @@
 
 ## Upload files from command line
 
-https://bashupload.com/
+https://dropcli.com/
