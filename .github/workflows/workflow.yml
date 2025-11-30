@@ -39,7 +39,7 @@ jobs:
         warp-cli --accept-tos connect
 
     - name: dl
-      run : yt-dlp -i --merge-output-format mkv -o "%(title)s %(upload_date>%d-%m-%Y)s.%(ext)s" -f "bv*[height<=1100]+ba/b[height<=1100]" --write-subs --write-auto-subs --embed-subs --sub-langs en,hi --convert-subs srt --embed-chapters "${{ inputs.url }}"
+      run : yt-dlp -i --merge-output-format mkv -o "%(title)s %(upload_date>%d-%m-%Y)s.%(ext)s" -S "height:1100,vcodec:h264,acodec:aac,acodec:mp4a" --write-subs --write-auto-subs --embed-subs --sub-langs en,hi --convert-subs srt --embed-chapters "${{ inputs.url }}"
 
     - name: crop
       run : |
