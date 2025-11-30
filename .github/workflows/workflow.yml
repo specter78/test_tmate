@@ -13,29 +13,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Delete workflow runs
-      uses: Mattraks/delete-workflow-runs@main
-      with:
-        retain_days: 0
-        keep_minimum_runs: 0
+    - uses: actions/checkout@v5
     - uses: ruby/setup-ruby@v1
       with:
           ruby-version: ruby
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v6
       with:
           python-version: '3.x'
     - name: Setup Environment
       run: |
         sudo apt install python3-pip
-    - name: Setup rclone
-      uses: AnimMouse/setup-rclone@v1
+    - name: Setup deno
+      uses: denoland/setup-deno@v2
       with:
-        rclone_config: ${{ secrets.RCLONE_CONFIG }}
+        deno-version: vx.x.x
     - name: Setup yt-dlp with ffmpeg
       uses: AnimMouse/setup-yt-dlp@v3
 
-    - name: CFW
+    - name: warp
       run: |
         curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
         echo "deb [signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
@@ -43,10 +38,10 @@ jobs:
         warp-cli --accept-tos registration new
         warp-cli --accept-tos connect
 
-    - name: DL
-      run : yt-dlp -i --merge-output-format mkv -o "%(title)s %(upload_date>%d-%m-%Y)s.%(ext)s" -f "bv*[height<=1100]+ba/b[height<=1100]" --write-subs --write-auto-subs --embed-subs --sub-langs en,hi --convert-subs srt --compat-options no-keep-subs --embed-chapters "${{ inputs.url }}"
+    - name: dl
+      run : yt-dlp -i --merge-output-format mkv -o "%(title)s %(upload_date>%d-%m-%Y)s.%(ext)s" -f "bv*[height<=1100]+ba/b[height<=1100]" --write-subs --write-auto-subs --embed-subs --sub-langs en,hi --convert-subs srt --embed-chapters "${{ inputs.url }}"
 
-    - name: CV
+    - name: crop
       run : |
         warp-cli --accept-tos disconnect
         ls
@@ -59,4 +54,17 @@ jobs:
         done
         
     - name: UL
-      run: rclone copy . remote:/ --include="*.mkv" -P --stats 1s -v --stats-one-line
+      run : curl -sL https://filen.io/cli.sh | bash
+
+    - name: Setup tmate session
+      id: tmate
+      uses: mxschmitt/action-tmate@v3
+      with:
+        detached: true
+        limit-access-to-actor: true
+    - name: Send SSH to telegram
+      run: |
+        BOT="${{ secrets.TG_BOT }}"
+        CHAT="${{ secrets.TG_CHAT }}"
+        CMD="${{ steps.tmate.outputs.ssh-command }}"
+        curl -s -X POST https://api.telegram.org/bot"$BO
