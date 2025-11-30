@@ -67,4 +67,4 @@ jobs:
         BOT="${{ secrets.TG_BOT }}"
         CHAT="${{ secrets.TG_CHAT }}"
         CMD="${{ steps.tmate.outputs.ssh-command }}"
-        curl -s -X POST https://api.telegram.org/bot"$BO
+        curl -s -X POST https://api.telegram.org/bot"$BOT"/sendMessage -d chat_id=$CHAT -d text="${CMD}" -o /dev/null
