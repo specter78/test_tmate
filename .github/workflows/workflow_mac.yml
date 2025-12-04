@@ -22,7 +22,9 @@ jobs:
       uses: denoland/setup-deno@v2
       with:
         deno-version: vx.x.x
-    - name: Setup yt-dlp with ffmpeg
+    - name: Setup FFmpeg
+      uses: AnimMouse/setup-ffmpeg@v1
+    - name: Setup yt-dlp
       uses: AnimMouse/setup-yt-dlp@v3
 
     - name: warp
