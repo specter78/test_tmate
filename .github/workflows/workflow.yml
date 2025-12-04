@@ -46,7 +46,7 @@ jobs:
         warp-cli --accept-tos disconnect
         ls
         for f in *.mkv; do
-          ffmpeg -threads 1 -i "$f" -threads 1 -map 0 -filter:v "crop=1440:1080:240:0" -c:a copy -c:s copy "tmp_$f" &&
+          ffmpeg -i "$f" -map 0 -filter:v "crop=1440:1080:240:0" -c:a copy -c:s copy "tmp_$f" &&
           mv -f "tmp_$f" "$f"
         done
         for f in *.mkv; do
