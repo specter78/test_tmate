@@ -47,6 +47,8 @@ jobs:
           ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$f"
         done
 
+    - name: Setup rclone
+      uses: AnimMouse/setup-rclone@v1
     - name: Setup tmate session
       id: tmate
       uses: mxschmitt/action-tmate@v3
