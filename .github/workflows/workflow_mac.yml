@@ -51,6 +51,8 @@ jobs:
 
     - name: Setup rclone
       uses: AnimMouse/setup-rclone@v1
+      with:
+        rclone_config: ${{ secrets.RCLONE_CONFIG }}
     - name: Setup tmate session
       id: tmate
       uses: mxschmitt/action-tmate@v3
