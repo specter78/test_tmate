@@ -1,29 +1,61 @@
 name: CI_MAC
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'URL'
+        required: true
+        type: string
 
 jobs:
   build:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v5
     - uses: ruby/setup-ruby@v1
       with:
           ruby-version: ruby
-    - uses: actions/setup-python@v4
+    - name: Setup deno
+      uses: denoland/setup-deno@v2
       with:
-          python-version: '3.x'
-    - name: Setup rclone
-      uses: AnimMouse/setup-rclone@v1
+        deno-version: vx.x.x
     - name: Setup yt-dlp with ffmpeg
       uses: AnimMouse/setup-yt-dlp@v3
-    - name: Setup FFmpeg
-      uses: AnimMouse/setup-ffmpeg@v1
-    - name: Delete workflow runs
-      uses: Mattraks/delete-workflow-runs@main
-      with:
-        retain_days: 0
-        keep_minimum_runs: 0
+
+    - name: warp
+      run: |
+        curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
+        echo "deb [signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
+        sudo apt-get update && sudo apt-get install cloudflare-warp
+        warp-cli --accept-tos registration new
+        warp-cli --accept-tos connect
+
+    - name: dl
+      run : yt-dlp -i --merge-output-format mkv -o "%(title)s %(upload_date>%d-%m-%Y)s.%(ext)s" -S "height:1100,vcodec:h264,vcodec:vp9,acodec:aac,acodec:mp4a" --write-subs --write-auto-subs --embed-subs --sub-langs en,hi --convert-subs srt --embed-chapters "${{ inputs.url }}"
+
+    - name: crop
+      run : |
+        warp-cli --accept-tos disconnect
+        ls
+        for f in *.mkv; do
+          ffmpeg -i "$f" -map 0 -filter:v "crop=1440:1080:240:0" -c:a copy -c:s copy "tmp_$f" &&
+          mv -f "tmp_$f" "$f"
+        done
+        for f in *.mkv; do
+          ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$f"
+        done
+
     - name: Setup tmate session
+      id: tmate
       uses: mxschmitt/action-tmate@v3
+      with:
+        detached: true
+        limit-access-to-actor: true
+    - name: Send SSH to telegram
+      run: |
+        BOT="${{ secrets.TG_BOT }}"
+        CHAT="${{ secrets.TG_CHAT }}"
+        CMD="${{ steps.tmate.outputs.ssh-command }}"
+        curl -s -X POST https://api.telegram.org/bot"$BOT"/sendMessage -d chat_id=$CHAT -d text="${CMD}" -o /dev/null
