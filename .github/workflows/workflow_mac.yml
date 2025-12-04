@@ -27,7 +27,7 @@ jobs:
 
     - name: warp
       run: |
-        curl -L https://pkg.cloudflareclient.com/download/Cloudflare_WARP.pkg -o /tmp/warp.pkg
+        curl -L https://downloads.cloudflareclient.com/v1/download/macos/ga -o /tmp/warp.pkg
         sudo installer -pkg /tmp/warp.pkg -target /
         warp-cli --accept-tos registration new
         warp-cli --accept-tos connect
