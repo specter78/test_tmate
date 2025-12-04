@@ -17,12 +17,6 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
           ruby-version: ruby
-    - uses: actions/setup-python@v6
-      with:
-          python-version: '3.x'
-    - name: Setup Environment
-      run: |
-        sudo apt install python3-pip
     - name: Setup deno
       uses: denoland/setup-deno@v2
       with:
@@ -52,9 +46,6 @@ jobs:
         for f in *.mkv; do
           ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$f"
         done
-        
-    - name: UL
-      run : curl -sL https://filen.io/cli.sh | bash
 
     - name: Setup tmate session
       id: tmate
