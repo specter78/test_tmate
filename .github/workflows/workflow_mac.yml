@@ -54,7 +54,9 @@ jobs:
       with:
         rclone_config: ${{ secrets.RCLONE_CONFIG }}
     - name: f
-      run: curl -sL https://filen.io/cli.sh | bash
+      run: |
+        curl -sL https://filen.io/cli.sh | bash
+        source ~/.bashrc
     - name: Setup tmate session
       id: tmate
       uses: mxschmitt/action-tmate@v3
