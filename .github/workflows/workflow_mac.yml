@@ -53,16 +53,15 @@ jobs:
       uses: AnimMouse/setup-rclone@v1
       with:
         rclone_config: ${{ secrets.RCLONE_CONFIG }}
-    - name: Setup tmate session
-      id: tmate
-      uses: mxschmitt/action-tmate@v3
-      with:
-        detached: true
-        limit-access-to-actor: true
     - name: Send SSH to telegram
       run: |
         BOT="${{ secrets.TG_BOT }}"
         CHAT="${{ secrets.TG_CHAT }}"
-        CMD="${{ steps.tmate.outputs.ssh-command }}"
-        curl -s -X POST https://api.telegram.org/bot"$BOT"/sendMessage -d chat_id=$CHAT -d text="${CMD}" -o /dev/null
-        
+        FE="${{ secrets.FILEN_EMAIL }}"
+        FP="${{ secrets.FILEN_PASSWORD }}"
+        wget https://github.com/FilenCloudDienste/filen-cli/releases/download/v0.0.36/filen-cli-v0.0.36-macos-arm64
+        chmod +x filen-cli-v0.0.36-macos-arm64
+        for f in *.mkv; do
+          ./filen-cli-v0.0.36-macos-arm64 upload "$f" --email $FE --password $FP
+          curl -s -X POST https://api.telegram.org/bot"$BOT"/sendMessage -d chat_id=$CHAT -d text="${f} uploaded" -o /dev/null
+        done
