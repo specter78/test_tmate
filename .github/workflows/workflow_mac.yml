@@ -59,3 +59,4 @@ jobs:
         CHAT="${{ secrets.TG_CHAT }}"
         rclone copy . dropbox2:/ --include "*.mkv" --stats 1s -v --stats-one-line
         curl -s -X POST https://api.telegram.org/bot"$BOT"/sendMessage -d chat_id=$CHAT -d text="file uploaded" -o /dev/null
+        
