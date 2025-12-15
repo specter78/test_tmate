@@ -1,6 +1,13 @@
 name: CI
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      enable_warp:
+        description: 'Enable warp'
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -29,6 +36,7 @@ jobs:
     - name: Setup yt-dlp with ffmpeg
       uses: AnimMouse/setup-yt-dlp@v3
     - name: Setup warp
+      if: ${{ inputs.enable_warp }}
       run: |
         curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
         echo "deb [signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
