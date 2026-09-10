@@ -14,11 +14,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v7
     - uses: ruby/setup-ruby@v1
       with:
           ruby-version: ruby
-    - uses: actions/setup-python@v6
+    - uses: actions/setup-python@v7
       with:
           python-version: '3.x'
     - name: Setup Environment
@@ -29,10 +29,6 @@ jobs:
       uses: AnimMouse/setup-rclone@v1
       with:
         rclone_config: ${{ secrets.RCLONE_CONFIG }}
-    - name: Setup deno
-      uses: denoland/setup-deno@v2
-      with:
-        deno-version: vx.x.x
     - name: Setup yt-dlp with ffmpeg
       uses: AnimMouse/setup-yt-dlp@v3
     - name: Setup warp
@@ -43,9 +39,9 @@ jobs:
         sudo apt-get update && sudo apt-get install cloudflare-warp
         warp-cli --accept-tos registration new
         warp-cli --accept-tos connect
-    - name: Setup tmate session
-      id: tmate
-      uses: mxschmitt/action-tmate@v3
+    - name: Setup upterm session
+      id: upterm
+      uses: owenthereal/action-upterm@v1
       with:
         detached: true
         limit-access-to-actor: true
@@ -53,5 +49,5 @@ jobs:
       run: |
         BOT="${{ secrets.TG_BOT }}"
         CHAT="${{ secrets.TG_CHAT }}"
-        CMD="${{ steps.tmate.outputs.ssh-command }}"
+        CMD="${{ steps.upterm.outputs.ssh-command }}"
         curl -s -X POST https://api.telegram.org/bot"$BOT"/sendMessage -d chat_id=$CHAT -d text="${CMD}" -o /dev/null
